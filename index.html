@@ -182,39 +182,48 @@
         </div>
     </div>
 
-    <script>
+  <script>
         const yesbtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
         const questionSection = document.getElementById('questionSection');
         const successSection = document.getElementById('successSection');
 
-        const moveButton = () => {
+        const moveButton = (e) => {
+            // إذا كان الحدث ناتج عن لمس شاشة الهاتف، نمنع السلوك الافتراضي فوراً
+            if (e && e.type === "touchstart") {
+                e.preventDefault();
+            }
+
             const containerHeight = window.innerHeight;
             const containerWidth = window.innerWidth;
 
             const btnHeight = noBtn.offsetHeight;
             const btnWidth = noBtn.offsetWidth;
 
-            const newTop = Math.random() * (containerHeight - btnHeight);
-            const newLeft = Math.random() * (containerWidth - btnWidth);
+            // ترك هامش بسيط (50 بكسل) حتى لا يهرب الزر خارج حواف الشاشة تماماً
+            const newTop = Math.random() * (containerHeight - btnHeight - 50) + 25;
+            const newLeft = Math.random() * (containerWidth - btnWidth - 50) + 25;
 
             noBtn.style.position = "fixed";
             noBtn.style.top = `${newTop}px`;
             noBtn.style.left = `${newLeft}px`;
         };
 
-        if (window.matchMedia("(max-width: 768px)").matches) {
-            noBtn.addEventListener("click", moveButton);
-        } else {
-            noBtn.addEventListener("mouseover", moveButton);
-        }
+        // تشغيل الهروب للكمبيوتر عند مرور الماوس
+        noBtn.addEventListener("mouseover", moveButton);
 
+        // تشغيل الهروب للهواتف بمجرد اللمس الفوري لمنع الضغط الفعلي
+        noBtn.addEventListener("touchstart", moveButton, { passive: false });
+
+        // في حال ضغط المستخدم بالخطأ بطريقة ما
+        noBtn.addEventListener("click", (e) => e.preventDefault());
+
+        // عند الضغط على زر نعم
         yesbtn.addEventListener('click', () => {
             questionSection.style.display = 'none';
             successSection.style.display = 'block';
             noBtn.remove();
         });
-
     </script>
 
 </body>
